@@ -2,4 +2,4 @@
 
 Print("This will be used a lot moving forward")
 
-Print("THis is awesome!")
+Print("This is awesome!")
