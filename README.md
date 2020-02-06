@@ -1,0 +1,1 @@
+# Folder for future projects from Codeup Data Science
