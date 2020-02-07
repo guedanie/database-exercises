@@ -42,4 +42,18 @@ SELECT count(*), gender FROM employees GROUP BY gender;
 #What is the average salary for all employees
 SELECT count(emp_no), sum(salary), AVG(salary) FROM salaries;
 
-SELECT 
+#What is the average salary by gender
+SELECT gender, AVG(salary), count(gender) 
+	FROM employees
+	JOIN salaries
+	ON salaries.emp_no = employees.emp_no
+	GROUP BY gender; 
+
+#What is the gender distribution by gender?
+DESCRIBE titles;
+
+SELECT title, count(gender)
+	FROM employees
+	JOIN titles
+	ON titles.emp_no = employees.emp_no
+	;	
