@@ -31,3 +31,15 @@ DESCRIBE employees_with_departments;
 #Show the SQL that created the dept_manager table
 
 SHOW CREATE TABLE dept_manager;
+
+SELECT * FROM employees;
+
+SELECT * FROM salaries;
+
+# What is the distribution by gender
+SELECT count(*), gender FROM employees GROUP BY gender;
+
+#What is the average salary for all employees
+SELECT count(emp_no), sum(salary), AVG(salary) FROM salaries;
+
+SELECT 
