@@ -27,6 +27,16 @@ SELECT *
 FROM employees
 WHERE last_name LIKE '%q%';
 
+#Update query to use or instead of in
+SELECT *
+FROM employees
+WHERE first_name LIKE 'Irena' OR first_name LIKE 'Vidya' OR first_name LIKE 'Maya';
+
+#Add condition to previous query to find male
+SELECT * 
+FROM employees
+WHERE (first_name LIKE 'Irena' OR first_name LIKE 'Vidya' OR first_name LIKE 'Maya') AND gender LIKE 'M';
+
 #Find all employees whose last name starts or ends with E
 SELECT last_name
 FROM employees
@@ -46,3 +56,8 @@ WHERE hire_date BETWEEN "1990-01-01" AND "1999-12-31" AND birth_date LIKE "%12-2
 SELECT *
 FROM employees
 WHERE last_name LIKE '%q%' AND last_name NOT LIKE '%qu%';
+
+#Testing ways to extract date and month
+SELECT *
+FROM employees
+WHERE birth_date LIKE MONTH(12);
