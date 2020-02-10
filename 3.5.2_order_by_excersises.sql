@@ -2,7 +2,7 @@ USE employees;
 
 SELECT * FROM employees;
 
-#Find all employees with first anmes "Irena, Vidya or Maya
+#Find all employees with first anmes "Irena, Vidya or Maya, sort by first name then last name 
 SELECT *
 FROM employees
 WHERE first_name IN ('Irena', 'Vidya', 'Maya')
@@ -70,7 +70,7 @@ SELECT *
 FROM employees
 WHERE (hire_date BETWEEN "1990-01-01" AND "1999-12-31")
 AND birth_date LIKE "%12-25"
-ORDER BY hire_date DESC;
+ORDER BY birth_date ASC, hire_date DESC;
 
 #Find all employees with a 'q' in their last name but not 'qu'
 SELECT *
