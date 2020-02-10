@@ -53,13 +53,13 @@ FROM employees
 WHERE (first_name = 'Irena' OR first_name = 'Vidya' OR first_name = 'Maya') 
 AND gender = 'M';
 
-#Find all employees whose last name starts or ends with E
+#Order by employee number in ascending order 
 SELECT *
 FROM employees
 WHERE last_name LIKE 'E%' OR last_name LIKE '%E'
 ORDER BY emp_no ASC;
 
-#Duplicate previous query and update to find all employees whose last name starts and ends with E
+#Order by employee number in descending order
 SELECT *
 FROM employees
 WHERE last_name LIKE 'E%' AND last_name LIKE '%E'
@@ -70,7 +70,7 @@ SELECT *
 FROM employees
 WHERE (hire_date BETWEEN "1990-01-01" AND "1999-12-31")
 AND birth_date LIKE "%12-25"
-ORDER BY hire_date desc;
+ORDER BY hire_date DESC;
 
 #Find all employees with a 'q' in their last name but not 'qu'
 SELECT *
