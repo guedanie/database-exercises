@@ -142,7 +142,7 @@ FROM employees;
 SELECT AVG(DATEDIFF(NOW(), hire_date)/ 365.25) AS 'AVG TIME IN company', AVG(DATEDIFF(now(),birth_date) /365.25) AS 'AVG age', MAX(hire_date), max(birth_date), DATEdiff(MAX(hire_date),MAX(birth_date)) / 365.25 AS 'Difference'
 FROM employees;
 
-###### GROUP BY EXERCISES
+###### GROUP BY EXERCISES ###############
 SELECT * 
 FROM employees.titles;
 
@@ -156,6 +156,13 @@ FROM employees
 WHERE last_name LIKE 'E%' AND last_name LIKE '%E'
 ;
 
+#Find the number of distinct names
+SELECT concat(first_name,' ', last_name) AS 'full_name'
+FROM employees
+WHERE last_name LIKE 'e%e'
+GROUP BY full_name;
+
+
 #Update query below to only include unique names
 SELECT DISTINCT(last_name)
 FROM employees
@@ -163,9 +170,11 @@ WHERE last_name LIKE '%q%'
 AND last_name NOT LIKE '%qu%';
 
 #Find number of employees that share a name
-SELECT first_name, count(first_name)
+SELECT DISTINCT(last_name), count(*)
 FROM employees
-GROUP BY first_name;
+WHERE last_name LIKE '%q%'
+AND last_name NOT LIKE '%qu%'
+GROUP BY last_name;
 
 #Update query below to count number of employees with these names 
 SELECT count(*), gender 
@@ -175,13 +184,7 @@ GROUP BY gender;
 
 
 #Are there any duplicate usernames?
-SELECT Count(LOWER(CONCAT(
-SUBSTR(first_name, 1,1), 
-SUBSTR(last_name, 1,4), 
-'_', 
-SUBSTR(birth_date, 6, 2), 
-SUBSTR(birth_date, 3, 2)
-))) AS 'N_Usernames', 
+SELECT Count(*) AS 'N_Usernames', 
 
 LOWER(CONCAT(
 SUBSTR(first_name, 1,1), 
@@ -211,8 +214,8 @@ SUBSTR(birth_date, 3, 2)
 ))) DESC
 ;
 
-#How many duplicates are there?
-SELECT COUNT(*), 
+#How many duplicates are there? = 13,251
+SELECT COUNT(*) AS 'n_usernames', 
 
 LOWER(CONCAT(
 SUBSTR(first_name, 1,1), 
@@ -225,19 +228,8 @@ AS 'Username'
 	
 FROM employees
 
-GROUP BY (LOWER(CONCAT(
-SUBSTR(first_name, 1,1), 
-SUBSTR(last_name, 1,4), 
-'_', 
-SUBSTR(birth_date, 6, 2), 
-SUBSTR(birth_date, 3, 2)
-)))
+GROUP BY username
 
-ORDER BY Count(LOWER(CONCAT(
-SUBSTR(first_name, 1,1), 
-SUBSTR(last_name, 1,4), 
-'_', 
-SUBSTR(birth_date, 6, 2), 
-SUBSTR(birth_date, 3, 2)
-))) DESC
+HAVING count(*) > 1
+
 ;
