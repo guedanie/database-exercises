@@ -96,13 +96,33 @@ SUBSTR(birth_date, 6, 2),
 SUBSTR(birth_date, 3, 2)
 ))
 AS 'Username', first_name, last_name, birth_date 
-FROM employees;
-
-
-
+FROM employees
+LIMIT 10;
 
 #Find all employees with a 'q' in their last name but not 'qu'
 SELECT *
 FROM employees
 WHERE last_name LIKE '%q%'
 AND last_name NOT LIKE '%qu%';
+
+SELECT first_name, len(first_name)
+FROM employees;
+
+##BONUS
+# Find the number of years each employee has been with the company, not just the
+# number of days. *Bonus* do this without the DATEDIFF function (hint: YEAR)
+SELECT *, Datediff(NOW(), hire_date) / 365.25 AS 'Time in Company'
+FROM employees
+
+SELECT *, YEAR(NOW()) - YEAR(hire_date) / 365.25 AS 'Time in Company'
+FROM employees;
+
+# Find OUT how old EACH employee was WHEN they were hired.
+SELECT *, datediff(hire_date, birth_date) / 365.25 AS 'Age when hired'
+FROM employees;
+
+# Find the most recent DATE IN the dataset. What does this tell you? Does this
+# explain the distribution of employee ages?
+SELECT AVG(DATEDIFF(NOW(), hire_date)/ 365.25) AS 'AVG time in company', AVG(DATEDIFF(now(),birth_date) /365.25) AS 'AVG age', MAX(hire_date), max(birth_date), DATEdiff(MAX(hire_date),MAX(birth_date)) / 365.25 AS 'Difference'
+FROM employees;
+
