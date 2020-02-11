@@ -54,13 +54,13 @@ WHERE (first_name = 'Irena' OR first_name = 'Vidya' OR first_name = 'Maya')
 AND gender = 'M';
 
 #Order by employee number in ascending order 
-SELECT *, UPPER(CONCAT(first_name, last_name)) AS full_name
+SELECT *, UPPER(CONCAT(first_name,' ', last_name)) AS full_name
 FROM employees
 WHERE CONCAT(last_name, first_name) LIKE 'E%' OR CONCAT(last_name, first_name) LIKE '%E'
 ORDER BY emp_no ASC;
 
 #Order by employee number in descending order - update to contt the first and last name
-SELECT *, UPPER(CONCAT(first_name, last_name)) AS full_name
+SELECT *, UPPER(CONCAT(first_name, ' ', last_name)) AS full_name
 FROM employees
 WHERE CONCAT(last_name, first_name) LIKE 'E%' AND CONCAT(last_name, first_name) LIKE '%E'
 ORDER BY emp_no DESC;
@@ -73,7 +73,7 @@ AND birth_date LIKE "%12-25"
 ORDER BY birth_date ASC, hire_date DESC;
 
 #How long have employees hired in the 90's been working 
-SELECT *, DATEDIFF(NOW(), hire_date) AS "Days working"
+SELECT *, DATEDIFF(NOW(), hire_date) AS "days_with_company"
 FROM employees
 WHERE (hire_date BETWEEN "1990-01-01" AND "1999-12-31")
 AND birth_date LIKE "%12-25"
@@ -82,7 +82,9 @@ ORDER BY birth_date ASC, hire_date DESC;
 #Largest and Smaller salary
 SELECT * FROM salaries;
 
-SELECT MIN(salary), MAX(salary)
+SELECT 
+ MIN(salary), 
+ MAX(salary)
 FROM salaries;
 
 #Generate username for all employees
@@ -93,6 +95,20 @@ SUBSTR(first_name, 1,1),
 SUBSTR(last_name, 1,4), 
 '_', 
 SUBSTR(birth_date, 6, 2), 
+SUBSTR(birth_date, 3, 2)
+))
+AS 'Username', first_name, last_name, birth_date 
+FROM employees
+LIMIT 10;
+
+#Alternative solution
+SELECT * FROM employees;
+
+SELECT LOWER(CONCAT(
+SUBSTR(first_name, 1,1), 
+SUBSTR(last_name, 1,4), 
+'_', 
+LPAD(MONTH(birth_date), 2, '0'), #This is called the left pad, which looks at queries and if they are not folloiowng a format, they will pat it with a 0
 SUBSTR(birth_date, 3, 2)
 ))
 AS 'Username', first_name, last_name, birth_date 
@@ -111,18 +127,18 @@ FROM employees;
 ##BONUS
 # Find the number of years each employee has been with the company, not just the
 # number of days. *Bonus* do this without the DATEDIFF function (hint: YEAR)
-SELECT *, Datediff(NOW(), hire_date) / 365.25 AS 'Time in Company'
+SELECT *, Datediff(NOW(), hire_date) / 365.25 AS 'TIME IN Company'
 FROM employees
 
-SELECT *, YEAR(NOW()) - YEAR(hire_date) / 365.25 AS 'Time in Company'
+SELECT *, YEAR(NOW()) - YEAR(hire_date) / 365.25 AS 'TIME IN Company'
 FROM employees;
 
 # Find OUT how old EACH employee was WHEN they were hired.
-SELECT *, datediff(hire_date, birth_date) / 365.25 AS 'Age when hired'
+SELECT *, datediff(hire_date, birth_date) / 365.25 AS 'Age WHEN hired'
 FROM employees;
 
 # Find the most recent DATE IN the dataset. What does this tell you? Does this
 # explain the distribution of employee ages?
-SELECT AVG(DATEDIFF(NOW(), hire_date)/ 365.25) AS 'AVG time in company', AVG(DATEDIFF(now(),birth_date) /365.25) AS 'AVG age', MAX(hire_date), max(birth_date), DATEdiff(MAX(hire_date),MAX(birth_date)) / 365.25 AS 'Difference'
+SELECT AVG(DATEDIFF(NOW(), hire_date)/ 365.25) AS 'AVG TIME IN company', AVG(DATEDIFF(now(),birth_date) /365.25) AS 'AVG age', MAX(hire_date), max(birth_date), DATEdiff(MAX(hire_date),MAX(birth_date)) / 365.25 AS 'Difference'
 FROM employees;
 
