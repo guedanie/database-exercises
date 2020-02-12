@@ -32,7 +32,8 @@ SELECT departments.dept_name AS 'Department Name', CONCAT(employees.first_name, 
 FROM departments
 JOIN dept_manager ON departments.dept_no = dept_manager.dept_no
 JOIN employees ON dept_manager.emp_no = employees.emp_no
-WHERE to_date LIKE '9999%';
+WHERE to_date > now()
+ORDER BY dept_manager.emp_no;
 
 SELECT * FROM dept_emp;
 
