@@ -106,4 +106,19 @@ ORDER BY salaries.salary DESC
 LIMIT 1;
 
 #BONUS find the names of all current employees, their department name and current managers names
-SELECT CONCAT(employees.first_name, employees.last_name), departments.dept_name, dept_manager.emp_no
+SELECT CONCAT(employees.first_name,' ', employees.last_name) AS full_name, emp_dept.dept_name AS departments, CONCAT(managers.first_name,' ', managers.last_name) AS managers
+FROM employees 
+JOIN employees_with_departments AS emp_dept ON employees.emp_no = emp_dept.emp_no
+JOIN dept_manager ON emp_dept.dept_no = dept_manager.dept_no
+LEFT JOIN employees AS managers ON dept_manager.emp_no = managers.emp_no
+WHERE dept_manager.to_date LIKE "9999%"
+;
+
+
+#Bonus Find the highest paid employee in each department
+SELECT employees.first_name, departments.dept_name, MAX(salaries.salary)
+FROM employees
+JOIN salaries ON employees.emp_no = salaries.emp_no
+JOIN departments ON dept_manager.dept_no = departments.dept_no
+GROUP BY departments.dept_name
+LIMIT 1;
