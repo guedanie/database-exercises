@@ -40,3 +40,20 @@ WHERE emp_no IN (
     WHERE to_date > CURDATE() 
 ) AND gender = 'F'
 ;
+
+#Find all the employees that currently have a higher than average salary
+SELECT AVG(salary)
+FROM salaries
+;
+
+
+SELECT employees.first_name, employees.last_name, salaries.salary
+FROM employees
+JOIN salaries ON employees.emp_no = salaries.emp_no
+WHERE salary IN (
+	SELECT salary
+	FROM salaries
+	WHERE salary > AVG(salary)
+	) AND salaries.to_date > NOW()
+
+;
