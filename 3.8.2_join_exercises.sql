@@ -42,7 +42,8 @@ SELECT departments.dept_name AS 'Department Name', CONCAT(employees.first_name, 
 FROM departments
 JOIN dept_manager ON departments.dept_no = dept_manager.dept_no
 JOIN employees ON dept_manager.emp_no = employees.emp_no
-WHERE to_date LIKE '9999%' AND gender = 'F';
+WHERE to_date > now() AND gender = 'F'
+ORDER BY departments.dept_name; 
 
 #Find the current titles of employees currently working in the customer services department
 SELECT titles.title AS Title, count(*) AS Count
