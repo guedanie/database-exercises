@@ -116,9 +116,10 @@ WHERE dept_manager.to_date LIKE "9999%"
 
 
 #Bonus Find the highest paid employee in each department
-SELECT employees.first_name, departments.dept_name, MAX(salaries.salary)
+SELECT em.dept_name, MAX(employees.first_name)
 FROM employees
 JOIN salaries ON employees.emp_no = salaries.emp_no
-JOIN departments ON dept_manager.dept_no = departments.dept_no
-GROUP BY departments.dept_name
-LIMIT 1;
+JOIN employees_with_departments AS em ON employees.emp_no = em.emp_no
+WHERE salaries.to_date LIKE "9999%" AND salaries.salary > 130000
+GROUP BY em.dept_name
+;
