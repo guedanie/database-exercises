@@ -63,7 +63,8 @@ FROM departments
 JOIN dept_manager ON departments.dept_no = dept_manager.dept_no
 JOIN employees ON dept_manager.emp_no = employees.emp_no
 JOIN salaries ON employees.emp_no = salaries.emp_no
-WHERE salaries.to_date LIKE '9999-01-01' AND dept_manager.to_date = '9999-01-01';
+WHERE salaries.to_date LIKE '9999-01-01' AND dept_manager.to_date = '9999-01-01'
+ORDER BY departments.dept_name;
 
 #Find the number of employees in each department
 SELECT departments.dept_no, departments.dept_name, count(employees.emp_no)

@@ -28,7 +28,15 @@ GROUP BY titles.title
 ;
 
 #How many people in the employees table are no longer working for the company?
-SELECT dept_emp.dept_no, COUNT(*)
-FROM employees
-WHERE 
+# Skipping for now, as there is no current way to know if the employee has left the company, or simply moved departments or new salary
+;
 
+#Find all the current department managers that are female.
+SELECT first_name, last_name
+FROM employees
+WHERE emp_no IN (
+    SELECT emp_no
+    FROM dept_manager
+    WHERE to_date > CURDATE() 
+) AND gender = 'F'
+;
