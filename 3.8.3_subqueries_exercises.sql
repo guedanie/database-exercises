@@ -89,10 +89,10 @@ JOIN salaries ON employees.emp_no = salaries.emp_no
 WHERE employees.emp_no IN (
 	SELECT emp_no
 	FROM salaries
-	WHERE salary > (AVG(salary))
+	WHERE salary > (sum(salaries)/count(salaries))
 	) 
 AND salaries.to_date > NOW()
 ;
 
-SELECT STDEV(salary) AS salary_sd
-FROM salaries
+SELECT STDDEV(salary) AS salary_sd
+FROM salaries;
