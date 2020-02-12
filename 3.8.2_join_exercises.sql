@@ -95,6 +95,19 @@ ORDER BY salaries.salary DESC
 LIMIT 1
 ;
 
+#Using the 'Using' function to shorten the join process
+SELECT employees.first_name, employees.last_name
+FROM employees
+JOIN salaries
+	USING (emp_no)
+JOIN dept_emp
+	USING (emp_no)
+JOIN departments
+	USING(dept_no)
+WHERE departments.dept_name = 'Marketing' AND salaries.to_date LIKE '9999%'
+ORDER BY salaries.salary DESC
+LIMIT 10;
+
 #WHich current department manager has the highest salary?
 SELECT employees.first_name, employees.last_name, salaries.salary, departments.dept_name
 FROM employees
@@ -116,10 +129,23 @@ WHERE dept_manager.to_date LIKE "9999%"
 
 
 #Bonus Find the highest paid employee in each department
-SELECT em.dept_name, MAX(employees.first_name)
+SELECT emp.dept_name, max(salary)
+FROM employees
+JOIN employees_with_departments AS emp ON employees.emp_no = emp.emp_no
+JOIN salaries ON employees.emp_no = salaries.emp_no
+GROUP BY emp.dept_name
+;
+
+#Sub query method
+SELECT em.dept_name, employees.first_name, max(salary)
 FROM employees
 JOIN salaries ON employees.emp_no = salaries.emp_no
 JOIN employees_with_departments AS em ON employees.emp_no = em.emp_no
-WHERE salaries.to_date LIKE "9999%" AND salaries.salary > 130000
+WHERE salary IN(
+	SELECT MAX(salary) AS max_salary
+	FROM salaries
+	JOIN dept_emp USING(emp_no)
+	WHERE salaries.to_date LIKE "9999%"
+	)
 GROUP BY em.dept_name
 ;
