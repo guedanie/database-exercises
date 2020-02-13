@@ -85,6 +85,14 @@ GROUP BY departments.dept_name
 )
 ;
 
+SELECT employees.departments.dept_name, AVG(salary)
+	FROM employees.departments
+	JOIN employees.dept_emp USING (dept_no)
+	JOIN employees.employees USING (emp_no)
+	JOIN employees.salaries USING (emp_no)
+	WHERE employees.salaries.to_date > NOW() AND employees.dept_emp.to_date > NOW()
+	GROUP BY dept_name;
+
 SELECT salary - (SELECT AVG(salary)FROM salaries) / (SELECT(stddev(salary)) FROM salaries) AS 'z_score'
 FROM salaries;
 
@@ -105,8 +113,8 @@ CREATE TEMPORARY TABLE dept_avg AS
 	GROUP BY employees.departments.dept_name
 ;
 
-CREATE TEMPORARY TABLE dept_salary AS 
-	SELECT employees.departments.dept_name, salary
+CREATE TEMPORARY TABLE dept_overall AS 
+	SELECT AVG(salary) AS overall_avg
 	FROM employees.departments
 	JOIN employees.dept_emp USING (dept_no)
 	JOIN employees.employees USING (emp_no)
@@ -114,6 +122,10 @@ CREATE TEMPORARY TABLE dept_salary AS
 	WHERE employees.salaries.to_date > NOW() AND employees.dept_emp.to_date > NOW()
 ;
 
+DROP TABLE dept_overall;
+
+SELECT * 
+FROM dept_overall;
 
 CREATE TEMPORARY TABLE dept_sd AS 
 	SELECT employees.departments.dept_name, stddev(salary) AS sd_salary
@@ -125,11 +137,9 @@ CREATE TEMPORARY TABLE dept_sd AS
 	GROUP BY employees.departments.dept_name
 ;
 
-SELECT dept_salary.dept_name, ((salary - dept_avg.avg_salary) / dept_sd.sd_salary) AS z_score
-FROM dept_salary
-JOIN dept_avg ON dept_salary.dept_name = dept_avg.dept_name
-JOIN dept_sd ON dept_avg.dept_name = dept_sd.dept_name
-GROUP BY dept_salary.dept_name
+SELECT dept_avg.dept_name, ((dept_avg.avg_salary - (SELECT * FROM dept_overall)) / dept_sd.sd_salary) AS z_score
+FROM dept_sd
+JOIN dept_avg ON dept_avg.dept_name = dept_sd.dept_name
 ;
 
 SELECT *
@@ -146,3 +156,5 @@ FROM emp_salary;
 SELECT emplyees.departments.dept_name, z_score
 FROM dept_sum
 WHERE 
+
+AVG dept - overall AVG of ALL departments / std(dept)
