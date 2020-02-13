@@ -83,16 +83,18 @@ AND salaries.to_date > NOW()
 
 #How many current salaries are within 1 standard deviation of the highest salary? (Hint: you can use a built in function to calculate the standard deviation.) What percentage of all salaries is this?
 
-SELECT employees.first_name, employees.last_name, salaries.salary
+SELECT employees.first_name, employees.last_name, employee_salary.salary
 FROM employees
-JOIN salaries ON employees.emp_no = salaries.emp_no
+LEFT JOIN salaries AS employee_salary ON employees.emp_no = employee_salary.emp_no
 WHERE employees.emp_no IN (
 	SELECT emp_no
 	FROM salaries
-	WHERE salary > (sum(salaries)/count(salaries))
+	WHERE employee_salary.salary > (SELECT(AVG(salary)))
 	) 
-AND salaries.to_date > NOW()
+AND employee_salary.to_date > NOW()
 ;
+
+
 
 SELECT STDDEV(salary) AS salary_sd
 FROM salaries;
