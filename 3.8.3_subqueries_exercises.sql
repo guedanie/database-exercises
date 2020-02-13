@@ -28,21 +28,12 @@ GROUP BY titles.title
 ;
 
 #How many people in the employees table are no longer working for the company?
-SELECT Count(emp_no)
-FROM employees
-WHERE emp_no IN (
-	SELECT emp_no
+SELECT (
+	SELECT count(*)
+	FROM employees
+) - (SELECT count(*)
 	FROM salaries
-	WHERE to_date < NOW()
-) AND emp_no IN (
-	SELECT emp_no
-	FROM dept_emp
-	WHERE to_date < NOW()
-) AND emp_no IN (
-	SELECT emp_no
-	FROM titles
-	WHERE to_date < NOW()
-)
+	WHERE to_date > NOW())
 ;
 
 #Find all the current department managers that are female.
@@ -83,9 +74,10 @@ AND employee_salary.to_date > NOW()
 ;
 
 
+
 #How many current salaries are within 1 standard deviation of the highest salary? (Hint: you can use a built in function to calculate the standard deviation.) 78 salaries
 
-SELECT STDDEV((MAX(salary)) AS salary_sd
+SELECT STDDEV(salary)
 FROM salaries;
 
 SELECT MAX(salary) - STDDEV(salary)
@@ -102,9 +94,23 @@ WHERE employees.emp_no IN (
 ;
 
 # What percentage of all salaries is this?
-SELECT 78 / count(*)
+SELECT (78 / count(*)) * 100
 FROM salaries
 WHERE to_date > NOW();
+
+#Programatic Option
+SELECT (
+	SELECT count(*)
+	FROM employees
+	WHERE employees.emp_no IN (
+		SELECT emp_no
+		FROM salaries
+		WHERE salary > (SELECT MAX(salary) - STDDEV(salary) FROM salaries) AND to_date > NOW()
+)) / (SELECT count(*)
+	FROM salaries
+	WHERE to_date > NOW()
+	) * 100
+;
 
 
 #BONUS find all the department names that currently have female managers
@@ -121,7 +127,7 @@ WHERE dept_no IN (
 	)
 ;
 
-#FInd the first and last name of the employee with the higehst salary
+#FInd the first and last name of the employee with the highest salary
 
 #Using subquery method
 SELECT first_name, last_name
