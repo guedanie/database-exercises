@@ -38,6 +38,10 @@ WHERE emp_no IN (
 	SELECT emp_no
 	FROM dept_emp
 	WHERE to_date < NOW()
+) AND emp_no IN (
+	SELECT emp_no
+	FROM titles
+	WHERE to_date < NOW()
 )
 ;
 
@@ -79,10 +83,29 @@ AND employee_salary.to_date > NOW()
 ;
 
 
-#How many current salaries are within 1 standard deviation of the highest salary? (Hint: you can use a built in function to calculate the standard deviation.) What percentage of all salaries is this?
+#How many current salaries are within 1 standard deviation of the highest salary? (Hint: you can use a built in function to calculate the standard deviation.) 78 salaries
 
-SELECT STDDEV(salary) AS salary_sd
+SELECT STDDEV((MAX(salary)) AS salary_sd
 FROM salaries;
+
+SELECT MAX(salary) - STDDEV(salary)
+FROM salaries;
+
+#Actual query
+SELECT count(*)
+FROM employees
+WHERE employees.emp_no IN (
+	SELECT emp_no
+	FROM salaries
+	WHERE salary > (SELECT MAX(salary) - STDDEV(salary) FROM salaries) AND to_date > NOW()
+)
+;
+
+# What percentage of all salaries is this?
+SELECT 78 / count(*)
+FROM salaries
+WHERE to_date > NOW();
+
 
 #BONUS find all the department names that currently have female managers
 SELECT dept_name
@@ -153,4 +176,5 @@ WHERE dept_no IN (
 		FROM salaries
 		WHERE salary = (SELECT(MAX(salary)) FROM salaries) AND to_date > NOW()
 		)
-	);
+	)
+	;
