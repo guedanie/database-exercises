@@ -139,16 +139,25 @@ JOIN salaries ON employees.emp_no = salaries.emp_no
 GROUP BY emp.dept_name
 ;
 
-#Sub query method
-SELECT em.dept_name, employees.first_name, max(salary)
+SELECT departments.dept_name, employees.first_name
 FROM employees
-JOIN salaries ON employees.emp_no = salaries.emp_no
-JOIN employees_with_departments AS em ON employees.emp_no = em.emp_no
-WHERE salary IN(
-	SELECT MAX(salary) AS max_salary
+JOIN dept_emp USING (emp_no)
+JOIN departments USING (dept_no)
+JOIN salaries USING (emp_no)
+WHERE salaries.to_date > NOW() AND dept_emp.to_date > NOW()
+GROUP BY departments.dept_name
+ORDER BY salaries.salary
+;
+
+
+#Sub query method
+SELECT first_name, last_name, departments.dept_name
+FROM employees
+JOIN dept_emp USING (emp_no)
+JOIN departments USING (dept_no)
+WHERE emp_no IN (
+	SELECT emp_no
 	FROM salaries
-	JOIN dept_emp USING(emp_no)
-	WHERE salaries.to_date LIKE "9999%"
+	ORDER BY salary
 	)
-GROUP BY em.dept_name
 ;
