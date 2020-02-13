@@ -52,9 +52,6 @@ WHERE emp_no IN (
 ;
 
 #Find all the employees that currently have a higher than average salary
-SELECT AVG(salary)
-FROM salaries
-;
 
 #Example query
 SELECT title, count(*)
@@ -70,19 +67,6 @@ GROUP BY title
 ;
 
 #Actual query
-SELECT employees.first_name, employees.last_name, salaries.salary
-FROM employees
-JOIN salaries ON employees.emp_no = salaries.emp_no
-WHERE employees.emp_no IN (
-	SELECT emp_no
-	FROM salaries
-	WHERE salary > 65000
-	) 
-AND salaries.to_date > NOW()
-;
-
-#How many current salaries are within 1 standard deviation of the highest salary? (Hint: you can use a built in function to calculate the standard deviation.) What percentage of all salaries is this?
-
 SELECT employees.first_name, employees.last_name, employee_salary.salary
 FROM employees
 LEFT JOIN salaries AS employee_salary ON employees.emp_no = employee_salary.emp_no
@@ -95,6 +79,58 @@ AND employee_salary.to_date > NOW()
 ;
 
 
+#How many current salaries are within 1 standard deviation of the highest salary? (Hint: you can use a built in function to calculate the standard deviation.) What percentage of all salaries is this?
 
 SELECT STDDEV(salary) AS salary_sd
 FROM salaries;
+
+#BONUS find all the department names that currently have female managers
+SELECT dept_name
+FROM departments
+WHERE dept_no IN (
+	SELECT dept_no
+	FROM dept_manager
+	WHERE emp_no IN (
+		SELECT emp_no
+		FROM employees
+		WHERE gender = 'F'
+		) AND to_date > NOW()
+	)
+;
+
+#FInd the first and last name of the employee with the higehst salary
+SELECT first_name, last_name
+FROM employees
+WHERE emp_no IN (
+	SELECT emp_no
+	FROM salaries
+	WHERE salary = (SELECT(MAX(salary))) AND to_date > NOW()
+	ORDER BY salary DESC
+	)
+;
+
+#COrrect output using JOIN
+SELECT employees.first_name, employees.last_name, salaries.salary
+FROM employees
+JOIN salaries USING(emp_no)
+WHERE to_date > NOW()
+ORDER BY salary DESC
+LIMIT 1
+;
+
+SELECT salary 
+FROM salaries
+WHERE salary = (SELECT(MAX(salary)))
+ORDER BY salary DESC;
+
+#FInd the department name that the employee wit hthe higehst salary works in
+
+SELECT dept_name
+FROM departments
+JOIN dept_emp USING (dept_no)
+JOIN employees USING (emp_no)
+JOIN salaries USING (emp_no)
+WHERE dept_emp.to_date > NOW() AND salaries.to_date > NOW()
+ORDER BY salary DESC
+LIMIT 1
+;
