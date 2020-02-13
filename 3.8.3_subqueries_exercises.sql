@@ -63,7 +63,7 @@ WHERE emp_no IN (
 	AND to_date > now()
 )
 AND to_date > now()
-GROUP BY title
+GROUP BY titles
 ;
 
 #Actual query
@@ -73,7 +73,7 @@ LEFT JOIN salaries AS employee_salary ON employees.emp_no = employee_salary.emp_
 WHERE employees.emp_no IN (
 	SELECT emp_no
 	FROM salaries
-	WHERE employee_salary.salary > (SELECT(AVG(salary)))
+	WHERE employee_salary.salary > (SELECT(AVG(salary)) FROM salaries)
 	) 
 AND employee_salary.to_date > NOW()
 ;
@@ -99,13 +99,14 @@ WHERE dept_no IN (
 ;
 
 #FInd the first and last name of the employee with the higehst salary
+
+#Using subquery method
 SELECT first_name, last_name
 FROM employees
 WHERE emp_no IN (
 	SELECT emp_no
 	FROM salaries
-	WHERE salary = (SELECT(MAX(salary))) AND to_date > NOW()
-	ORDER BY salary DESC
+	WHERE salary = (SELECT(MAX(salary)) FROM salaries) AND to_date > NOW()
 	)
 ;
 
@@ -118,13 +119,10 @@ ORDER BY salary DESC
 LIMIT 1
 ;
 
-SELECT salary 
-FROM salaries
-WHERE salary = (SELECT(MAX(salary)))
-ORDER BY salary DESC;
 
 #FInd the department name that the employee wit hthe higehst salary works in
 
+#Using Join method
 SELECT dept_name
 FROM departments
 JOIN dept_emp USING (dept_no)
@@ -134,3 +132,25 @@ WHERE dept_emp.to_date > NOW() AND salaries.to_date > NOW()
 ORDER BY salary DESC
 LIMIT 1
 ;
+
+#Using subquery method
+SELECT dept_name
+FROM employees_with_departments
+WHERE emp_no IN (
+	SELECT emp_no
+	FROM salaries
+	WHERE salary = (SELECT(MAX(salary)) FROM salaries) AND to_date > NOW()
+	);
+
+#Using subquery method and not using the employees_with_departments table	
+SELECT dept_name
+FROM departments
+WHERE dept_no IN (
+	SELECT dept_no
+	FROM dept_emp
+	WHERE emp_no IN (
+		SELECT emp_no
+		FROM salaries
+		WHERE salary = (SELECT(MAX(salary)) FROM salaries) AND to_date > NOW()
+		)
+	);
