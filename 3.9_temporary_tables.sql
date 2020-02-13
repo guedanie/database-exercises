@@ -75,6 +75,20 @@ FROM payment;
 
 USE employees;
 
+SELECT departments.dept_name, (salary - (SELECT(AVG(salary)) FROM salaries) / (SELECT(stddev(salary)) FROM salaries)) AS 'z_score'
+FROM departments
+JOIN dept_emp USING (dept_no)
+JOIN employees USING (emp_no)
+JOIN salaries USING (emp_no)
+WHERE salaries.to_date > NOW() AND dept_emp.to_dates > NOW()
+GROUP BY departments.dept_name
+)
+;
+
+SELECT salary - (SELECT AVG(salary)FROM salaries) / (SELECT(stddev(salary)) FROM salaries) AS 'z_score'
+FROM salaries;
+
+
 USE curie_942;
 
 SELECT AVG(salary)
@@ -82,7 +96,7 @@ FROM salaries
 WHERE to_date > NOW();
 
 CREATE TEMPORARY TABLE dept_avg AS 
-	SELECT employees.departments.dept_name, AVG(salary)
+	SELECT employees.departments.dept_name, AVG(salary) AS avg_salary
 	FROM employees.departments
 	JOIN employees.dept_emp USING (dept_no)
 	JOIN employees.employees USING (emp_no)
@@ -91,18 +105,18 @@ CREATE TEMPORARY TABLE dept_avg AS
 	GROUP BY employees.departments.dept_name
 ;
 
-CREATE TEMPORARY TABLE dept_sum AS 
-	SELECT employees.departments.dept_name, sum(salary)
+CREATE TEMPORARY TABLE dept_salary AS 
+	SELECT employees.departments.dept_name, salary
 	FROM employees.departments
 	JOIN employees.dept_emp USING (dept_no)
 	JOIN employees.employees USING (emp_no)
 	JOIN employees.salaries USING (emp_no)
 	WHERE employees.salaries.to_date > NOW() AND employees.dept_emp.to_date > NOW()
-	GROUP BY employees.departments.dept_name
 ;
+
 
 CREATE TEMPORARY TABLE dept_sd AS 
-	SELECT employees.departments.dept_name, stddev(salary)
+	SELECT employees.departments.dept_name, stddev(salary) AS sd_salary
 	FROM employees.departments
 	JOIN employees.dept_emp USING (dept_no)
 	JOIN employees.employees USING (emp_no)
@@ -110,6 +124,16 @@ CREATE TEMPORARY TABLE dept_sd AS
 	WHERE employees.salaries.to_date > NOW() AND employees.dept_emp.to_date > NOW()
 	GROUP BY employees.departments.dept_name
 ;
+
+SELECT dept_salary.dept_name, ((salary - dept_avg.avg_salary) / dept_sd.sd_salary) AS z_score
+FROM dept_salary
+JOIN dept_avg ON dept_salary.dept_name = dept_avg.dept_name
+JOIN dept_sd ON dept_avg.dept_name = dept_sd.dept_name
+GROUP BY dept_salary.dept_name
+;
+
+SELECT *
+FROM dept_avg;
 
 # z score = salary - avg(salary) / stddev(salary)
 
