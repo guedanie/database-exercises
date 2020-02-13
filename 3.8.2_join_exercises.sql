@@ -139,25 +139,32 @@ JOIN salaries ON employees.emp_no = salaries.emp_no
 GROUP BY emp.dept_name
 ;
 
-SELECT departments.dept_name, employees.first_name
+SELECT departments.dept_name, employees.first_name, max(salaries.salary)
 FROM employees
 JOIN dept_emp USING (emp_no)
 JOIN departments USING (dept_no)
 JOIN salaries USING (emp_no)
 WHERE salaries.to_date > NOW() AND dept_emp.to_date > NOW()
 GROUP BY departments.dept_name
-ORDER BY salaries.salary
 ;
 
 
+
+
 #Sub query method
-SELECT first_name, last_name, departments.dept_name
-FROM employees
-JOIN dept_emp USING (emp_no)
-JOIN departments USING (dept_no)
-WHERE emp_no IN (
-	SELECT emp_no
-	FROM salaries
-	ORDER BY salary
-	)
+SELECT emp.first_name, emp.last_name, dept.dept_name, max_salary.max_salary
+FROM salaries
+JOIN (
+        SELECT MAX(A.salary) AS max_salary, A.dept_no FROM 
+                (SELECT dept_emp.emp_no, dept_emp.dept_no, dept_emp.to_date, salaries.salary
+                FROM dept_emp
+                JOIN salaries USING (emp_no)
+                WHERE dept_emp.to_date > NOW()
+            ) A
+            GROUP BY A.dept_no
+            ) max_salary 
+            ON salaries.salary = max_salary.max_salary
+JOIN employees emp ON salaries.emp_no = emp.emp_no
+JOIN departments dept ON max_salary.dept_no = dept.dept_no
+WHERE salaries.to_date > NOW()
 ;
