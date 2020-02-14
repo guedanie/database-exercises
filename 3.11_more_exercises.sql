@@ -423,19 +423,45 @@ ORDER BY total DESC
 LIMIT 1
 ;
 
-#Who are the most popular actors (that have appeared in the most films)?
-SELECT concat(last_name, ', ', first_name) AS actor_name, COUNT(
-									SELECT actor_id
-									FROM actor
-									WHERE actor_id IN (
-									SELECT actor_id
-									FROM film_actor)) AS total
-
-GROUP BY actor_name
-ORDER BY total DESC
-LIMIT 5 
-;
+#Who are the most popular actors (that have appeared in the most films)? slight different between the correct answer - website doesn't seem to recognize susan davis as having 54 appearances
 
 SELECT concat(last_name, ', ', first_name) AS actor_name, count(*) AS total
 FROM actor
-JOIN 
+JOIN film_actor USING (actor_id)
+GROUP BY actor_name
+ORDER BY total DESC
+LIMIT 5
+;
+
+#What are the sales for each store for each month in 2005? Answer slightly different from results on page
+SELECT Concat(YEAR(payment_date), '-', '0', MONTH(payment_date)) AS MONTH, store.store_id, sum(amount) AS sales
+FROM payment
+JOIN staff USING (staff_id)
+JOIN store ON store.manager_staff_id = staff.staff_id
+WHERE YEAR(payment_date) = "2005"
+GROUP BY MONTH, store.store_id
+;
+
+SELECT MONTH(payment_date), count(customer_id)
+FROM payment
+WHERE YEAR(payment_date) = 2005
+GROUP BY MONTH(payment_date)
+;
+
+SELECT MONTH(payment_date), YEAR(payment_date) FROM payment;
+
+## Bonus: Find the film title, customer name, customer phone number, and customer address for all the outstanding DVDs.
+
+SELECT film.title, concat(customer.last_name,', ',customer.first_name), address.phone, address.address
+FROM address
+JOIN customer USING (address_id)
+JOIN payment USING (customer_id)
+JOIN rental USING (rental_id)
+JOIN inventory USING (inventory_id)
+JOIN film USING (film_id)
+WHERE rental.return_date IS NULL
+;
+
+SELECT count(*)
+FROM rental
+WHERE return_date IS NULL;
