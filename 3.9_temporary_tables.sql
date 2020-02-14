@@ -75,6 +75,7 @@ FROM payment;
 
 USE employees;
 
+# QUery trying to avoid using temporary tables - not going to work
 SELECT departments.dept_name, (salary - (SELECT(AVG(salary)) FROM salaries) / (SELECT(stddev(salary)) FROM salaries)) AS 'z_score'
 FROM departments
 JOIN dept_emp USING (dept_no)
@@ -93,6 +94,7 @@ SELECT employees.departments.dept_name, AVG(salary)
 	WHERE employees.salaries.to_date > NOW() AND employees.dept_emp.to_date > NOW()
 	GROUP BY dept_name;
 
+#Equation needed to claculate z-score
 SELECT salary - (SELECT AVG(salary)FROM salaries) / (SELECT(stddev(salary)) FROM salaries) AS 'z_score'
 FROM salaries;
 
@@ -103,6 +105,7 @@ SELECT AVG(salary)
 FROM salaries
 WHERE to_date > NOW();
 
+#Find the avegrage by departments from this table
 CREATE TEMPORARY TABLE dept_avg AS 
 	SELECT employees.departments.dept_name, AVG(salary) AS avg_salary
 	FROM employees.departments
@@ -113,6 +116,7 @@ CREATE TEMPORARY TABLE dept_avg AS
 	GROUP BY employees.departments.dept_name
 ;
 
+# Find the overall average of all salaries using this table
 CREATE TEMPORARY TABLE dept_overall AS 
 	SELECT AVG(salary) AS overall_avg
 	FROM employees.departments
@@ -122,11 +126,7 @@ CREATE TEMPORARY TABLE dept_overall AS
 	WHERE employees.salaries.to_date > NOW() AND employees.dept_emp.to_date > NOW()
 ;
 
-DROP TABLE dept_overall;
-
-SELECT * 
-FROM dept_overall;
-
+#Find the overall std of all salaries using this temporary table
 CREATE TEMPORARY TABLE dept_sd AS 
 	SELECT stddev(salary) AS sd_salary
 	FROM employees.departments
@@ -136,6 +136,7 @@ CREATE TEMPORARY TABLE dept_sd AS
 	WHERE employees.salaries.to_date > NOW() AND employees.dept_emp.to_date > NOW()
 ;
 
+#This is the query that actually returns the correct answer 
 
 SELECT dept_avg.dept_name, ((dept_avg.avg_salary - (SELECT * FROM dept_overall)) / (SELECT * FROM dept_sd)) AS z_score
 FROM dept_avg
