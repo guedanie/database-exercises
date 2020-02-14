@@ -207,3 +207,94 @@ WHERE film_id IN (
 	WHERE title = 'Hunchback Impossible'
 )
 ;
+
+# The music of Queen and Kris Kristofferson have seen an unlikely resurgence. As an unintended consequence, films starting with the letters K and Q have also soared in popularity. Use subqueries to display the titles of movies starting with the letters K and Q whose language is English.
+
+SELECT title
+FROM film
+WHERE language_id IN (
+	SELECT language_id
+	FROM `language`
+	WHERE `name` = 'English'
+	) AND title REGEXP '^[K,G]'
+;
+
+## Use subqueries to display all actors who appear in the film Alone Trip.
+
+SELECT CONCAT(first_name, ' ', last_name) AS full_name
+FROM actor
+WHERE actor_id IN (
+	SELECT actor_id
+	FROM film_actor
+	WHERE film_id IN (
+		SELECT film_id
+		FROM film
+		WHERE title = 'Alone Trip'
+		)
+	);
+	
+## You want to run an email marketing campaign in Canada, for which you will need the names and email addresses of all Canadian customers
+
+SELECT first_name, email
+FROM customer
+WHERE address_id IN (
+	SELECT address_id
+	FROM address
+	WHERE city_id IN (
+		SELECT city_id
+		FROM city
+		WHERE country_id IN (
+			SELECT country_id
+			FROM country
+			WHERE country = 'Canada'
+			)
+	)
+)
+;
+
+##Sales have been lagging among young families, and you wish to target all family movies for a promotion. Identify all movies categorized as famiy films.
+
+SELECT title
+FROM film
+WHERE film_id IN (
+	SELECT film_id
+	FROM film_category
+	WHERE category_id IN (
+		SELECT category_id
+		FROM category
+		WHERE `name` = 'Family'
+		)
+)
+;
+
+## Write a query to display how much business, in dollars, each store brought in.
+
+SELECT store.store_id, sum(payment.amount)
+FROM payment
+JOIN staff USING (staff_id)
+JOIN store USING (store_id)
+GROUP BY store_id
+;	
+
+# Write a query to display for each store its store ID, city, and country.
+
+SELECT store_id, city, country
+FROM store
+JOIN address USING (address_id)
+JOIN city USING (city_id)
+JOIN country USING (country_id)
+;
+
+#List the top five genres in gross revenue in descending order. (Hint: you may need to use the following tables: category, film_category, inventory, payment, and rental.)
+
+SELECT category.name AS genre, sum(payment.amount) AS gross_revenue
+FROM category
+JOIN film_category USING (category_id)
+JOIN film USING (film_id)
+JOIN inventory USING (film_id)
+JOIN rental USING (inventory_id)
+JOIN payment USING (rental_id)
+GROUP BY category.name
+ORDER BY gross_revenue desc
+LIMIT 5
+;
