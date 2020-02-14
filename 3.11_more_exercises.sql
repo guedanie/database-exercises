@@ -295,6 +295,147 @@ JOIN inventory USING (film_id)
 JOIN rental USING (inventory_id)
 JOIN payment USING (rental_id)
 GROUP BY category.name
-ORDER BY gross_revenue desc
+ORDER BY gross_revenue DESC
 LIMIT 5
 ;
+
+
+## Select statements Practice
+
+#Select all columns from the actor table
+
+SELECT * FROM actor;
+
+# select only the last_name column from the actor table
+
+SELECT last_name FROM actor;
+
+## Disctinct operator practice
+
+# select all distinct last names from the actors table
+
+SELECT DISTINCT last_name FROM actor;
+
+# Select all distinct (different) postal codes from the address table.
+
+SELECT DISTINCT postal_code FROM address;
+
+#Select all distinct (different) ratings from the film table
+
+SELECT DISTINCT rating FROM film;
+
+## Where clause practice
+
+#Select the title, description, rating, movie length columns from the films table that last 3 hours or longer.
+
+SELECT title, description, rating, length
+FROM film
+WHERE length > 180
+;
+
+# Select the payment id, amount, and payment date columns from the payments table for payments made on or after 05/27/2005.
+
+SELECT payment_id, amount, payment_date
+FROM payment
+WHERE payment_date >= "2005-05-27"
+;
+
+#Select all columns from the customer table for rows that have a last names beginning with S and a first names ending with N.
+
+SELECT *
+FROM customer
+WHERE last_name LIKE 'S%' AND first_name LIKE '%N'
+;
+
+#Select all columns from the customer table for rows where the customer is inactive or has a last name beginning with "M".
+
+SELECT * 
+FROM customer 
+WHERE active = 0 OR last_name LIKE 'M%'
+;
+
+#Select all columns from the category table for rows where the primary key is greater than 4 and the name field begins with either C, S or T
+
+SELECT *
+FROM category
+WHERE category_id > 4 AND `name` REGEXP '^[C,S,T]'
+;
+
+#Select all columns minus the password column from the staff table for rows that contain a password
+# It doesn't seem like this is possible - only solution is to manually select all the column exept for password
+SELECT *EXCLUDE staff.password
+FROM staff;
+
+#Back to challenges.- end of basic practice
+## What is the average replacement cost of a film? Does this change depending on the rating of the film?
+
+#What is the average replacement cost of a film? Does this change depending on the rating of the film?
+
+SELECT AVG(replacement_cost)
+FROM film
+;
+
+SELECT rating, AVG(replacement_cost)
+FROM film
+GROUP BY rating
+;
+
+# How many different films of each genre are in the database?
+
+SELECT `name` AS genre, count(*)
+FROM category
+JOIN film_category USING (category_id)
+JOIN film USING (film_id)
+GROUP BY genre
+;
+
+# What are the 5 frequently rented films?
+
+SELECT title, count(*) AS total
+FROM film
+JOIN inventory USING (film_id)
+JOIN rental USING (inventory_id)
+GROUP BY title
+ORDER BY total DESC
+LIMIT 10
+;
+
+# What are the most most profitable films (in terms of gross revenue)?
+
+SELECT title, sum(amount) AS total
+FROM film
+JOIN inventory USING (film_id)
+JOIN rental USING (inventory_id)
+JOIN payment USING (rental_id)
+GROUP BY title
+ORDER BY total DESC
+LIMIT 5
+;
+
+#Who is the best customer? 
+
+SELECT concat(last_name, ', ', first_name) AS NAME, sum(amount) AS total
+FROM customer
+JOIN rental USING (customer_id)
+JOIN payment USING (rental_id)
+GROUP BY NAME
+ORDER BY total DESC
+LIMIT 1
+;
+
+#Who are the most popular actors (that have appeared in the most films)?
+SELECT concat(last_name, ', ', first_name) AS actor_name, COUNT(
+									SELECT actor_id
+									FROM actor
+									WHERE actor_id IN (
+									SELECT actor_id
+									FROM film_actor)) AS total
+
+GROUP BY actor_name
+ORDER BY total DESC
+LIMIT 5 
+;
+
+SELECT concat(last_name, ', ', first_name) AS actor_name, count(*) AS total
+FROM actor
+JOIN 
