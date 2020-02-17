@@ -2,22 +2,24 @@ USE employees;
 
 ## Write a query that returns all employees (emp_no), their department number, their start date, their end date, and a new column 'is_current_employee' that is a 1 if the employee is still with the company and 0 if not.
 
-SELECT DISTINCT emp_no, dept_no, hire_date, to_date, 
+SELECT DISTINCT emp_no, dept_no, hire_date, dept_emp.to_date, 
 	CASE 
-		WHEN to_date LIKE '9999-01-01' THEN 1
+		WHEN dept_emp.to_date AND salaries.to_date LIKE '9999-01-01' THEN 1
 		ELSE 0
 		END AS 'is_current_employee'
 FROM employees
 JOIN dept_emp USING (emp_no)
+JOIN salaries USING (emp_no)
 ;
 
 SELECT DISTINCT  
 	CASE 
-		WHEN to_date LIKE '9999-01-01' THEN 1
+		WHEN dept_emp.to_date AND salaries.to_date LIKE '9999-01-01' THEN 1
 		ELSE 0
 		END AS 'is_current_employee', count(*)
 FROM employees
 JOIN dept_emp USING (emp_no)
+JOIN salaries USING (emp_no)
 GROUP BY is_current_employee
 ;
 

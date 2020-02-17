@@ -252,6 +252,8 @@ WHERE address_id IN (
 )
 ;
 
+USE sakila;
+
 ##Sales have been lagging among young families, and you wish to target all family movies for a promotion. Identify all movies categorized as famiy films.
 
 SELECT title
@@ -439,6 +441,15 @@ FROM payment
 JOIN staff USING (staff_id)
 JOIN store ON store.manager_staff_id = staff.staff_id
 WHERE YEAR(payment_date) = "2005"
+GROUP BY MONTH, store.store_id
+;
+
+#Using the date_format to effectively take out the date column
+SELECT date_format(payment_date, '%Y' '-' '%m') AS MONTH, store.store_id, sum(amount) AS sales
+FROM payment
+JOIN staff USING (staff_id)
+JOIN store USING (store_id)
+WHERE YEAR(payment_date) = 2005
 GROUP BY MONTH, store.store_id
 ;
 
