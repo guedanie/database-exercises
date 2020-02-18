@@ -368,10 +368,60 @@ WHERE category_id > 4 AND `name` REGEXP '^[C,S,T]'
 SELECT *EXCLUDE staff.password
 FROM staff;
 
+## IN Challenges
+#Select the phone and district columns from the address table for addresses in california, England, Taipei or West Java
+
+SELECT phone, district
+FROM address
+WHERE district IN ('California', 'England', 'Taipei', 'West Java')
+ORDER BY district
+;
+
+#Select the payment id, amount, and payment date columns from the payment table for paymets made in 05/25/2005, 05/27, 2005, and 05/29/2005 
+
+SELECT payment_id, amount, payment_date
+FROM payment
+WHERE YEAR(payment_date) IN (2005) AND MONTH(payment_date) IN (05) AND DAY(payment_date) IN (25, 27, 29)
+ORDER BY payment_date
+;
+
+#Select all columns from the film table for films rated G, PG-13, or NC-17
+SELECT *
+FROM film
+WHERE rating IN ('G', 'PG-13', 'NC-17')
+ORDER BY rating
+;
+
+#LIKE operator challenges
+#Sekect akk columns from the payment table and only include the first 20 rows
+
+SELECT *
+FROM payment
+LIMIT 20
+;
+
+#slect the payment and amount columns from the payment table for rows where the payment amount is greater than 5, and only select rows whose zero-based index in the result set is between 1000-2000.
+
+SELECT payment_id, amount
+FROM payment
+WHERE amount > 5
+LIMIT 240 OFFSET 246
+;
+ 
+## JOIN exercises
+# Select customer first_name/last_name and actor first_name/last_name columns from performing a left join between the customer and actor column on the last_name column in each table. (i.e. customer.last_name = actor.last_name)
+#Label customer first_name/last_name columns as customer_first_name/customer_last_name
+#Label actor first_name/last_name COLUMNS IN a similar fashion.
+#RETURNS correct number of records: 599
+
+SELECT customer.first_name AS customer_first_name, customer.last_name AS customer_last_name, actor.first_name AS actor_first_name, actor.last_name AS actor_last_name
+FROM customer
+LEFT JOIN actor USING (last_name)
+;
+
 #Back to challenges.- end of basic practice
 ## What is the average replacement cost of a film? Does this change depending on the rating of the film?
 
-#What is the average replacement cost of a film? Does this change depending on the rating of the film?
 
 SELECT AVG(replacement_cost)
 FROM film
@@ -425,7 +475,7 @@ ORDER BY total DESC
 LIMIT 1
 ;
 
-#Who are the most popular actors (that have appeared in the most films)? slight different between the correct answer - website doesn't seem to recognize susan davis as having 54 appearances
+#Who are the most popular actors (that have appeared in the most films)? slight different between the correct answer - website doesn't seem TO recognize susan davis AS HAVING 54 appearances
 
 SELECT concat(last_name, ', ', first_name) AS actor_name, count(*) AS total
 FROM actor
